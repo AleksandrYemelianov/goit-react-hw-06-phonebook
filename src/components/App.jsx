@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import useLocalStorage from '../hooks/LocalStorage'
 import { nanoid } from 'nanoid';
 
@@ -14,10 +14,6 @@ const CONTACT_KEY = 'contact-item-phonebook';
 export default function App() {
   const [contacts, setContacts] = useLocalStorage(CONTACT_KEY, contactsDefault)
   const [filter, setFilter] = useState('')
-
-  useEffect(() => {
-  console.log(contacts);
-}, [])
   
   const addContact = ({ name, number }) => {
     const nameNormalize = name.toLowerCase();
