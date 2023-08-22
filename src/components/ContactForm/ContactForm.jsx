@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 
-import { useDispatch } from "react-redux";
+import { getContacts } from 'redux/selectors';
 import { nanoid } from '@reduxjs/toolkit';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { addContact } from 'redux/contacts/slice';
+import { toast } from 'react-toastify';
 
+import optionNotification from 'components/Notification/Notification';
+import 'react-toastify/dist/ReactToastify.css';
 import css from './ContactForm.module.css'
 
 export default function ContactForm() {
     const [name, setName] = useState('')
     const [number, setNumber] = useState('')
     const dispatch = useDispatch();
+    const contacts = useSelector(getContacts)
+
+    const nameNormalize = name.toLowerCase();
+    const isExist = contacts.find(contact => nameNormalize === contact.name.toLocaleLowerCase())
 
     const handleChange = e => {
     const { name, value } = e.target;
@@ -29,9 +36,15 @@ export default function ContactForm() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(addContact(name, number))
-        setName('')
-        setNumber('')
+
+        if (isExist) {
+            toast.warn(`${name} is already in contacts.`, optionNotification)
+            return
+        } else {
+            dispatch(addContact(name, number));
+            setName('');
+            setNumber('');
+        };
     }
 
     const idNameInput = nanoid();
@@ -48,7 +61,7 @@ export default function ContactForm() {
                     value={name}
                     onChange={handleChange}
                     pattern="^[a-zA-Zа-яА-Я]+(([' \-][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-                    title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
+                    title={'Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore Artagnan'}
                     required
                     />
                     <label htmlFor={idNumberInput} className={css.label}>Number</label>
